@@ -55,7 +55,7 @@ DB_PASSWORD=password_dev
 DB_NAME=messaging_db
 JWT_SECRET=tu_secreto_jwt
 JWT_REFRESH_SECRET=tu_secreto_refresh
-PORT=4000
+PORT=3000
 ```
 
 ## 🐳 Base de datos con Docker
