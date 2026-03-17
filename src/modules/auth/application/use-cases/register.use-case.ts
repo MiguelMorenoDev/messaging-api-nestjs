@@ -1,4 +1,4 @@
-import { Inject, Injectable, BadRequestException } from '@nestjs/common';
+import { Inject, Injectable, BadRequestException, Logger } from '@nestjs/common';
 import { USER_REPOSITORY } from '../../../users/domain/user.repository';
 import type { IUserRepository } from '../../../users/domain/user.repository';
 import type { RegisterDomainDto } from '../../domain/register-domain.dto';
@@ -6,6 +6,8 @@ import bcrypt from 'bcrypt';
 
 @Injectable()
 export class RegisterUseCase {
+
+  private readonly logger = new Logger(RegisterUseCase.name);
 
   constructor(
     @Inject(USER_REPOSITORY)
@@ -16,6 +18,7 @@ export class RegisterUseCase {
     // 1. Ya existe un usuario con ese email?
     const existing = await this.userRepository.findByEmail(dto.email);
     if (existing) {
+      this.logger.warn(`Intento de registro con email ya registrado: ${dto.email}`)
       throw new BadRequestException('El email ya está registrado');
     }
 
@@ -29,5 +32,8 @@ export class RegisterUseCase {
       email: dto.email,
       password: hashedPassword,
     });
+
+    this.logger.log(`Usuario registrado: ${dto.email}`);
+    
   }
 }

@@ -1,10 +1,12 @@
-import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
+import { Inject, Injectable, UnauthorizedException, Logger } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { USER_REPOSITORY } from '../../../users/domain/user.repository';
 import type { IUserRepository } from '../../../users/domain/user.repository';
 
 @Injectable()
 export class RefreshTokenUseCase {
+
+    private readonly logger = new Logger(RefreshTokenUseCase.name);
 
   constructor(
     @Inject(USER_REPOSITORY)
@@ -26,6 +28,7 @@ export class RefreshTokenUseCase {
     // 2. Buscamos el usuario y comprobamos que el token coincide con el de la BD
     const user = await this.userRepository.findByIdAndRefreshToken(decoded.id, refreshToken);
     if (!user) {
+       this.logger.warn(`Intento de refresh con token no válido en BD - userId: ${decoded.id} - token no válido: ${ refreshToken }`)
       throw new UnauthorizedException('Sesión no válida');
     }
 
@@ -42,7 +45,7 @@ export class RefreshTokenUseCase {
 
     // 4. Guardamos el nuevo refreshToken, invalidando el viejo
     await this.userRepository.update(user.id, { refreshToken: newRefreshToken });
-
+    this.logger.log(`Refresh exitoso - userId: ${decoded.id}`);
     return { accessToken: newAccessToken, refreshToken: newRefreshToken };
   }
 }

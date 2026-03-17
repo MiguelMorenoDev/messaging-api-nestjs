@@ -31,18 +31,14 @@ src/
 - **PostgreSQL** — Base de datos
 - **JWT** — Autenticación con access token + refresh token rotation
 - **bcrypt** — Hash de contraseñas
+- **Winston** — Sistema de logs por niveles
 - **Docker** — Contenedor de base de datos
 
 ## ⚙️ Instalación
 ```bash
-# Clonar el repositorio
 git clone https://github.com/MiguelMorenoDev/messaging-api-nestjs.git
 cd messaging-api-nestjs
-
-# Instalar dependencias
 npm install
-
-# Copiar variables de entorno
 cp .env.example .env
 ```
 
@@ -84,7 +80,7 @@ npm run dev
 | GET | /users | Obtener todos los usuarios | No |
 | GET | /users/:id | Obtener usuario por ID | No |
 
-## 🔐 Autenticación
+## 🔐 Autenticación y Seguridad
 
 El sistema usa **refresh token rotation**:
 1. El login devuelve un `accessToken` (15 min) y un `refreshToken` (30 días)
@@ -92,10 +88,31 @@ El sistema usa **refresh token rotation**:
 3. Cada refresh genera un nuevo `refreshToken`, invalidando el anterior
 4. El logout invalida el `refreshToken` en la base de datos
 
+### Decisiones técnicas de seguridad
+
+**Validación de sesión en el guard**: El guard no solo verifica el JWT, también consulta la BD para comprobar que el usuario tiene sesión activa. Si el `refreshToken` es `null` (logout previo), la petición es rechazada con 401.
+
+**Blacklist de accessTokens con Redis** *(en desarrollo)*: JWT es stateless y no tiene invalidación nativa. Para resolver el agujero de seguridad donde un `accessToken` seguía siendo válido tras el logout, se implementará una blacklist en Redis. Al hacer logout, el `accessToken` se añade a Redis con TTL igual a su tiempo restante de expiración.
+
+## 📋 Logs
+
+El sistema registra eventos por niveles con Winston:
+- `info` — eventos normales (login, registro, logout exitosos)
+- `warn` — eventos sospechosos (intentos fallidos, doble logout, tokens inválidos)
+- `error` — errores críticos
+
+Los logs se guardan en:
+- `logs/combined.log` — todos los niveles
+- `logs/warn.log` — warnings y errores
+- `logs/error.log` — solo errores
+
 ## 🗺️ Roadmap
 
-- [ ] Validación de DTOs con class-validator
-- [ ] Logs con Winston
+- [x] Autenticación JWT con refresh token rotation
+- [x] Validación de DTOs con class-validator
+- [x] Logs con Winston
+- [x] Validación de sesión activa en el guard
+- [ ] Blacklist de accessTokens con Redis
 - [ ] Módulo Channels
 - [ ] Módulo Messages
 - [ ] Confirmación por email

@@ -1,13 +1,19 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { CanActivate, ExecutionContext } from '@nestjs/common';
+import { Inject } from '@nestjs/common';
+import { IUserRepository, USER_REPOSITORY } from '@/modules/users/domain/user.repository';
 
 @Injectable()
 export class JwtAuthGuard implements CanActivate {
 
-  constructor(private readonly jwtService: JwtService) {}
+  constructor(
+    private readonly jwtService: JwtService,
+    @Inject(USER_REPOSITORY)
+    private readonly userRepository: IUserRepository,
+  ) {}
 
-  canActivate(context: ExecutionContext): boolean {
+  async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
     const token = request.headers['authorization']?.split(' ')[1];
 
@@ -19,6 +25,13 @@ export class JwtAuthGuard implements CanActivate {
       const decoded = this.jwtService.verify(token, {
         secret: process.env.JWT_SECRET,
       });
+
+      //Comprobamos que el usuario tiene sesión activa en la BD
+      const user = await this.userRepository.findById(decoded.id);
+      if (!user || !user.refreshToken) {
+        throw new UnauthorizedException('Sesión no válida');
+      }
+
       request.user = decoded;
       return true;
     } catch {
