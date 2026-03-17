@@ -1,7 +1,7 @@
 import { Inject, Injectable, BadRequestException } from '@nestjs/common';
 import { USER_REPOSITORY } from '../../../users/domain/user.repository';
 import type { IUserRepository } from '../../../users/domain/user.repository';
-import type { RegisterDto } from '../../domain/register.dto';
+import type { RegisterDomainDto } from '../../domain/register-domain.dto';
 import bcrypt from 'bcrypt';
 
 @Injectable()
@@ -12,7 +12,7 @@ export class RegisterUseCase {
     private readonly userRepository: IUserRepository,
   ) {}
 
-  async execute(dto: RegisterDto): Promise<void> {
+  async execute(dto: RegisterDomainDto): Promise<void> {
     // 1. Ya existe un usuario con ese email?
     const existing = await this.userRepository.findByEmail(dto.email);
     if (existing) {

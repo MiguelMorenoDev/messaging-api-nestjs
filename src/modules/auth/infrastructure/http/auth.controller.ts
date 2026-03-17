@@ -3,9 +3,10 @@ import { RegisterUseCase } from '../../application/use-cases/register.use-case';
 import { LoginUseCase } from '../../application/use-cases/login.use-case';
 import { LogoutUseCase } from '../../application/use-cases/logout.use-case';
 import { RefreshTokenUseCase } from '../../application/use-cases/refresh-token.use-case';
-import type { RegisterDto } from '../../domain/register.dto';
-import type { LoginDto } from '../../domain/login.dto';
+import { RegisterDto } from './dtos/register.dto';
+import { LoginDto } from './dtos/login.dto'; 
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
+
 @Controller('auth')
 export class AuthController {
 
@@ -17,7 +18,7 @@ export class AuthController {
   ) {}
 
   @Post('register')
-  register(@Body() dto: RegisterDto) {
+  register(@Body() dto: RegisterDto ) {
     return this.registerUseCase.execute(dto);
   }
 

@@ -2,7 +2,7 @@ import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { USER_REPOSITORY } from '../../../users/domain/user.repository';
 import type { IUserRepository } from '../../../users/domain/user.repository';
-import type { LoginDto } from '../../domain/login.dto';
+import type { LoginDomainDto } from '../../domain/login-domain.dto';
 import bcrypt from 'bcrypt';
 
 @Injectable()
@@ -14,7 +14,7 @@ export class LoginUseCase {
     private readonly jwtService: JwtService,
   ) {}
 
-  async execute(dto: LoginDto): Promise<{ accessToken: string; refreshToken: string }> {
+  async execute(dto: LoginDomainDto): Promise<{ accessToken: string; refreshToken: string }> {
     // 1. ¿Existe el usuario?
     const user = await this.userRepository.findByEmail(dto.email);
     if (!user) {
