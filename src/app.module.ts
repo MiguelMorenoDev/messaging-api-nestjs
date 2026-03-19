@@ -3,6 +3,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { UsersModule } from './modules/users/users.module';
 import { AuthModule } from './modules/auth/auth.module';
+import { RedisModule } from './common/redis/redis.module';
 import { UserOrmEntity } from './modules/users/infrastructure/typeorm/user.typeorm-entity';
 
 @Module({
@@ -22,8 +23,11 @@ import { UserOrmEntity } from './modules/users/infrastructure/typeorm/user.typeo
         synchronize: true,
       }),
     }),
+    RedisModule,
     UsersModule,
     AuthModule,
+    
   ],
+  
 })
 export class AppModule {}

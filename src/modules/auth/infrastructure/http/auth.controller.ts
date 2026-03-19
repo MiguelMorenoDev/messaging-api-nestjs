@@ -30,7 +30,8 @@ export class AuthController {
   @Post('logout')
   @UseGuards(JwtAuthGuard)
   logout(@Req() req: any) {
-    return this.logoutUseCase.execute(req.user.id);
+    const token = req.headers['authorization'].split(' ')[1];
+    return this.logoutUseCase.execute(req.user.id, token);
   }
 
   @Post('refresh')
