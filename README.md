@@ -33,6 +33,7 @@ src/
 - **bcrypt** — Hash de contraseñas
 - **Winston** — Sistema de logs por niveles
 - **Docker** — Contenedor de base de datos
+- **Redis** — Blacklist de accessTokens revocados
 
 ## ⚙️ Instalación
 ```bash
@@ -92,7 +93,7 @@ El sistema usa **refresh token rotation**:
 
 **Validación de sesión en el guard**: El guard no solo verifica el JWT, también consulta la BD para comprobar que el usuario tiene sesión activa. Si el `refreshToken` es `null` (logout previo), la petición es rechazada con 401.
 
-**Blacklist de accessTokens con Redis** *(en desarrollo)*: JWT es stateless y no tiene invalidación nativa. Para resolver el agujero de seguridad donde un `accessToken` seguía siendo válido tras el logout, se implementará una blacklist en Redis. Al hacer logout, el `accessToken` se añade a Redis con TTL igual a su tiempo restante de expiración.
+**Blacklist de accessTokens con Redis**: JWT es stateless y no tiene invalidación nativa. Para resolver el agujero de seguridad donde un `accessToken` seguía siendo válido tras el logout, se implementará una blacklist en Redis. Al hacer logout, el `accessToken` se añade a Redis con TTL igual a su tiempo restante de expiración.
 
 ## 📋 Logs
 
@@ -112,7 +113,7 @@ Los logs se guardan en:
 - [x] Validación de DTOs con class-validator
 - [x] Logs con Winston
 - [x] Validación de sesión activa en el guard
-- [ ] Blacklist de accessTokens con Redis
+- [x] Blacklist de accessTokens con Redis
 - [ ] Módulo Channels
 - [ ] Módulo Messages
 - [ ] Confirmación por email
