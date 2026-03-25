@@ -93,7 +93,7 @@ El sistema usa **refresh token rotation**:
 
 **Validación de sesión en el guard**: El guard no solo verifica el JWT, también consulta la BD para comprobar que el usuario tiene sesión activa. Si el `refreshToken` es `null` (logout previo), la petición es rechazada con 401.
 
-**Blacklist de accessTokens con Redis**: JWT es stateless y no tiene invalidación nativa. Para resolver el agujero de seguridad donde un `accessToken` seguía siendo válido tras el logout, se implementará una blacklist en Redis. Al hacer logout, el `accessToken` se añade a Redis con TTL igual a su tiempo restante de expiración.
+**Blacklist de accessTokens con Redis**: JWT es stateless y no tiene invalidación nativa. Para resolver la vulnerabilidad donde un `accessToken` seguía siendo válido tras el logout, se implementará una blacklist en Redis. Al hacer logout, el `accessToken` se añade a Redis con TTL igual a su tiempo restante de expiración.
 
 ## 📋 Logs
 
